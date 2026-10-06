@@ -8,16 +8,13 @@
   <meta name="author" content="Abner">
   <title>LaTeX Converter by Abner | Professional LaTeX to Normal Text</title>
 
-  <!-- Favicon & Mobile Meta -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <meta name="theme-color" content="#4f46e5">
 
-  <!-- Open Graph / Social Sharing -->
   <meta property="og:title" content="LaTeX Converter by Abner | Professional LaTeX to Normal Text">
   <meta property="og:description" content="Lightning-fast tool to convert LaTeX equations, math notation, and markdown tables into clean text and Microsoft Word tables.">
   <meta property="og:type" content="website">
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,12 +23,11 @@
 </head>
 <body>
 
-  <!-- App Header -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-wrapper">
         <div class="brand-icon-box" aria-hidden="true">
-          <!-- Math / LaTeX conversion icon -->
+          
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="4 7 4 4 20 4 20 7"></polyline>
             <line x1="9" y1="20" x2="15" y2="20"></line>
@@ -49,8 +45,7 @@
 
       <div class="header-actions">
         <span class="badge-status" id="badge-engine-status">Engine Ready</span>
-        
-        <!-- Theme Toggle -->
+
         <button id="btn-theme-toggle" class="icon-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
@@ -68,10 +63,8 @@
     </div>
   </header>
 
-  <!-- Main Container -->
   <main class="main-wrapper">
 
-    <!-- Controls Strip: Mode Switcher, Stats & Quick Toggles -->
     <section class="control-strip" aria-label="Converter Controls">
       <div class="mode-selector-wrapper">
         <span class="mode-selector-label">Conversion Mode:</span>
@@ -127,7 +120,6 @@
       </div>
     </section>
 
-    <!-- Collapsible Advanced Options Panel -->
     <section id="options-panel" class="options-panel" aria-label="Advanced Configuration">
       <div class="options-grid">
         <div class="option-field">
@@ -184,10 +176,8 @@
       </div>
     </section>
 
-    <!-- Dual Workspace (Input & Output) -->
     <div class="converter-workspace">
 
-      <!-- INPUT CARD -->
       <section class="editor-card" aria-label="LaTeX and Markdown Input Area">
         <div class="card-header">
           <div class="card-title-group">
@@ -207,7 +197,6 @@
           </div>
         </div>
 
-        <!-- Symbol Insertion Toolbar -->
         <div class="symbol-toolbar" id="symbol-toolbar" aria-label="Math symbol insertion bar">
           <span style="font-size:0.72rem; color:var(--text-muted); margin-right:0.3rem;">Insert:</span>
           <button type="button" class="symbol-chip" data-insert="10^{-19}">10^{-19}</button>
@@ -245,7 +234,6 @@
         </div>
       </section>
 
-      <!-- OUTPUT CARD -->
       <section class="editor-card" aria-label="Converted Normal Text Output Area">
         <div class="card-header">
           <div class="card-title-group">
@@ -271,7 +259,6 @@
           </div>
         </div>
 
-        <!-- Output Tabs: Plain Text View vs Rendered Visual View -->
         <div class="output-tabs">
           <button id="tab-plain" class="output-tab-btn active" title="View clean plain text (perfect for copying)">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
@@ -304,7 +291,6 @@
 
     </div>
 
-    <!-- How It Works / Feature Highlights -->
     <section class="guide-section" aria-label="Guide and Feature Overview">
       <h3 class="guide-title">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -355,7 +341,6 @@
 
   </main>
 
-  <!-- Mobile Sticky Bottom Action Bar -->
   <aside class="mobile-action-bar" aria-label="Mobile Action Controls">
     <button id="mobile-btn-convert" class="mobile-btn primary">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -367,7 +352,6 @@
     </button>
   </aside>
 
-  <!-- App Footer -->
   <footer class="app-footer">
     <div class="footer-content">
       <div>
@@ -381,10 +365,8 @@
     </div>
   </footer>
 
-  <!-- Toast Notification Element -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- Scripts -->
   <script src="converter.js"></script>
   <script src="app.js"></script>
 </body>

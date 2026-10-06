@@ -1,25 +1,10 @@
-# Dependencies & dev servers
 node_modules/
 .npm/
-
-# Operating System files
+.vercel
 .DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
-# IDE & Editor files
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# Temporary & debug test scripts (keeps test_comprehensive.js)
-test_render_debug.js
-test_converter.js
-
-# Logs
 *.log
-npm-debug.log*
-
-.vercel

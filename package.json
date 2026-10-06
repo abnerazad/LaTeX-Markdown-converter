@@ -4,8 +4,7 @@
   "description": "Professional LaTeX & Markdown table converter to clean plain text, Unicode, and native Microsoft Word tables.",
   "main": "app.js",
   "scripts": {
-    "start": "npx serve .",
-    "test": "node test_comprehensive.js"
+    "start": "npx serve ."
   },
   "keywords": [
     "latex",

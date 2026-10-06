@@ -1,11 +1,6 @@
-/**
- * Application Controller for LaTeX Converter by Abner
- */
-
 document.addEventListener('DOMContentLoaded', function () {
   'use strict';
 
-  // DOM Elements
   const inputEl = document.getElementById('latex-input');
   const outputEl = document.getElementById('text-output');
   const renderedViewEl = document.getElementById('rendered-view');
@@ -18,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const fileUploadInput = document.getElementById('file-upload');
   const uploadBtn = document.getElementById('btn-upload');
 
-  // Mode and Toggle Elements
   const modeAsciiBtn = document.getElementById('mode-ascii');
   const modeUnicodeBtn = document.getElementById('mode-unicode');
   const autoConvertToggle = document.getElementById('toggle-auto-convert');
@@ -26,11 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const optionsPanel = document.getElementById('options-panel');
   const themeToggleBtn = document.getElementById('btn-theme-toggle');
 
-  // Output Tab Elements
   const tabPlainBtn = document.getElementById('tab-plain');
   const tabRenderedBtn = document.getElementById('tab-rendered');
 
-  // Option dropdowns / checkboxes
   const optSuperStyle = document.getElementById('opt-super-style');
   const optMultSym = document.getElementById('opt-mult-symbol');
   const optTableFormat = document.getElementById('opt-table-format');
@@ -38,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const optStripMarkdown = document.getElementById('opt-strip-markdown');
   const optCleanUnits = document.getElementById('opt-clean-units');
 
-  // Stats Elements
   const statFormulas = document.getElementById('stat-formulas');
   const statTables = document.getElementById('stat-tables');
   const statWords = document.getElementById('stat-words');
@@ -47,13 +38,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const outputCharsEl = document.getElementById('output-char-count');
   const statProcTime = document.getElementById('stat-proc-time');
 
-  // Symbol Toolbar
   const symbolToolbar = document.getElementById('symbol-toolbar');
 
-  // Toast Notification
   const toastEl = document.getElementById('toast');
 
-  // Storage Keys for Browser Cache Persistence
   const STORAGE_KEYS = {
     THEME: 'abner_latex_theme',
     TEXT: 'abner_latex_text',
@@ -62,12 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
     OPTIONS: 'abner_latex_options'
   };
 
-  // Current State
   let currentMode = 'ascii';
-  let activeOutputTab = 'plain'; // 'plain' or 'rendered'
+  let activeOutputTab = 'plain'; 
   let debounceTimer = null;
 
-  // Save text to browser cache
   function saveUserText() {
     try {
       localStorage.setItem(STORAGE_KEYS.TEXT, inputEl.value);
@@ -76,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Save settings & active mode/tab to browser cache
   function saveUserSettings() {
     try {
       localStorage.setItem(STORAGE_KEYS.MODE, currentMode);
@@ -97,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Provided Sample Data (Matches User Request)
   const PROVIDED_EXAMPLE = `* **Protons ($p^+$)**: Positively charged particles located within the central atomic nucleus. Each proton carries an absolute charge of $+1.6022 \\times 10^{-19}\\text{ C}$ (relative atomic charge of $+1$).
 * **Neutrons ($n^0$)**: Uncharged neutral particles located within the nucleus alongside protons. They possess no electric charge ($0\\text{ C}$).
 * **Electrons ($e^-$)**: Negatively charged particles revolving around the central nucleus. Each electron carries an absolute charge of $-1.6022 \\times 10^{-19}\\text{ C}$ (relative atomic charge of $-1$).
@@ -110,7 +94,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
 | **Neutron**        | $n^0$  | $0\\text{ C}$                        | $0$             | Inside Nucleus           |
 | **Electron**       | $e^-$  | $-1.6022 \\times 10^{-19}\\text{ C}$ | $-1$            | Outside Nucleus (Orbits) |`;
 
-  // Initialize Theme
   function initTheme() {
     const savedTheme = localStorage.getItem('abner_latex_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -139,7 +122,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Toast Notification
   function showToast(message, type = 'success') {
     if (!toastEl) return;
     toastEl.textContent = message;
@@ -149,7 +131,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     }, 2800);
   }
 
-  // Get Current Conversion Options
   function getConversionOptions() {
     return {
       mode: currentMode,
@@ -164,7 +145,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     };
   }
 
-  // Main Conversion Trigger
   function performConversion() {
     const rawInput = inputEl.value;
     const startTime = performance.now();
@@ -178,14 +158,11 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     const duration = Math.round(endTime - startTime);
     if (statProcTime) statProcTime.textContent = `${duration}ms`;
 
-    // Update Stats
     updateStats(rawInput, converted);
 
-    // Update Rendered View
     updateRenderedView(rawInput, converted);
   }
 
-  // Calculate and display document stats
   function updateStats(rawInput, converted) {
     if (!window.LatexConverter) return;
     const analysis = window.LatexConverter.analyzeText(rawInput);
@@ -198,7 +175,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     if (outputCharsEl) outputCharsEl.textContent = `${converted.length} chars`;
   }
 
-  // Render Visual View
   function updateRenderedView(rawInput, convertedText) {
     if (!renderedViewEl) return;
     if (!rawInput.trim()) {
@@ -220,14 +196,9 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     renderedViewEl.innerHTML = `<div class="rendered-content-container">${previewHtml}</div>`;
   }
 
-  /**
-   * Copies formatted content into clipboard with both text/html and text/plain
-   * Allows direct paste into Microsoft Word, Docs, or plain editors!
-   */
   async function copyRichTextToWord(htmlContent, plainTextContent) {
     let copied = false;
 
-    // Method 1: Modern navigator.clipboard with ClipboardItem
     if (navigator.clipboard && window.ClipboardItem) {
       try {
         const blobHtml = new Blob([htmlContent], { type: 'text/html' });
@@ -243,7 +214,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
       }
     }
 
-    // Method 2: Fallback using selection range on contenteditable element
     if (!copied) {
       try {
         const tempDiv = document.createElement('div');
@@ -272,9 +242,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     return copied;
   }
 
-  /**
-   * Handler for copying formatted content
-   */
   async function copyWordFormatted(rawInputText = null) {
     const rawInput = rawInputText || inputEl.value;
     if (!rawInput.trim()) {
@@ -302,7 +269,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     }
   }
 
-  // Debounced auto-conversion on input
   inputEl.addEventListener('input', function () {
     saveUserText();
     if (autoConvertToggle && !autoConvertToggle.checked) {
@@ -314,7 +280,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     debounceTimer = setTimeout(performConversion, 60);
   });
 
-  // Manual Convert Button
   if (convertBtn) {
     convertBtn.addEventListener('click', () => {
       saveUserText();
@@ -322,7 +287,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Clear Button
   if (clearBtn) {
     clearBtn.addEventListener('click', function () {
       inputEl.value = '';
@@ -339,16 +303,14 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Copy Output Button (Works for both Plain Text & Rendered Visual View)
   if (copyBtn) {
     copyBtn.addEventListener('click', async function () {
       if (activeOutputTab === 'rendered') {
-        // In Rendered Visual View: copies rich table & formatted text for Word & other editors
+        
         await copyWordFormatted(inputEl.value);
         return;
       }
 
-      // In Plain Text View: copies plain text
       const text = outputEl.value;
       if (!text) {
         showToast('Nothing to copy!', 'warn');
@@ -366,7 +328,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Copy Specific Table (for Excel & Word)
   if (copyTableBtn) {
     copyTableBtn.addEventListener('click', async function () {
       const raw = inputEl.value;
@@ -407,7 +368,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Download .txt Button
   if (downloadTxtBtn) {
     downloadTxtBtn.addEventListener('click', function () {
       const text = outputEl.value;
@@ -429,7 +389,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Download .tsv Button
   if (downloadTsvBtn) {
     downloadTsvBtn.addEventListener('click', function () {
       const text = outputEl.value;
@@ -451,7 +410,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // File Upload
   if (uploadBtn && fileUploadInput) {
     uploadBtn.addEventListener('click', () => fileUploadInput.click());
 
@@ -470,7 +428,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Mode Selection: ASCII Plain vs Unicode Pritty
   function setMode(mode, save = true) {
     currentMode = mode;
     if (mode === 'ascii') {
@@ -499,7 +456,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
   if (modeAsciiBtn) modeAsciiBtn.addEventListener('click', () => setMode('ascii'));
   if (modeUnicodeBtn) modeUnicodeBtn.addEventListener('click', () => setMode('unicode'));
 
-  // Switch output tab helper
   function switchOutputTab(tab, save = true) {
     activeOutputTab = tab;
     if (tab === 'rendered') {
@@ -518,7 +474,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     }
   }
 
-  // Output Tabs: Plain Text View vs Rendered Visual View
   if (tabPlainBtn) {
     tabPlainBtn.addEventListener('click', () => switchOutputTab('plain'));
   }
@@ -526,7 +481,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     tabRenderedBtn.addEventListener('click', () => switchOutputTab('rendered'));
   }
 
-  // Options Panel Drawer Toggle
   if (optionsToggleBtn && optionsPanel) {
     optionsToggleBtn.addEventListener('click', () => {
       optionsPanel.classList.toggle('open');
@@ -537,7 +491,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Auto-convert toggle change listener
   if (autoConvertToggle) {
     autoConvertToggle.addEventListener('change', () => {
       saveUserSettings();
@@ -547,7 +500,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Change listeners for options
   [optSuperStyle, optMultSym, optTableFormat, optBulletStyle, optStripMarkdown, optCleanUnits].forEach(ctrl => {
     if (ctrl) {
       ctrl.addEventListener('change', () => {
@@ -557,7 +509,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     }
   });
 
-  // Symbol Toolbar Insertion
   if (symbolToolbar) {
     symbolToolbar.addEventListener('click', function (e) {
       const chip = e.target.closest('.symbol-chip');
@@ -580,7 +531,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     textarea.focus();
   }
 
-  // Mobile Action Buttons
   const mobileBtnConvert = document.getElementById('mobile-btn-convert');
   const mobileBtnCopy = document.getElementById('mobile-btn-copy');
 
@@ -597,10 +547,9 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     });
   }
 
-  // Restore user preferences and previous text from browser cache
   function restoreSavedPreferences() {
     try {
-      // 1. Restore Mode
+      
       const savedMode = localStorage.getItem(STORAGE_KEYS.MODE);
       if (savedMode === 'unicode') {
         currentMode = 'unicode';
@@ -620,7 +569,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
         if (optMultSym) optMultSym.value = '*';
       }
 
-      // 2. Restore Options
       const savedOptionsStr = localStorage.getItem(STORAGE_KEYS.OPTIONS);
       if (savedOptionsStr) {
         try {
@@ -643,7 +591,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
         }
       }
 
-      // 3. Restore Output Tab
       const savedTab = localStorage.getItem(STORAGE_KEYS.TAB);
       if (savedTab === 'rendered') {
         switchOutputTab('rendered', false);
@@ -651,7 +598,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
         switchOutputTab('plain', false);
       }
 
-      // 4. Restore Previous Text if present in browser cache, otherwise leave initially empty
       const savedText = localStorage.getItem(STORAGE_KEYS.TEXT);
       if (savedText && savedText.trim().length > 0) {
         inputEl.value = savedText;
@@ -672,7 +618,6 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     }
   }
 
-  // Initialize App
   initTheme();
   restoreSavedPreferences();
 });

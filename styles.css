@@ -1,13 +1,7 @@
-/*
- * LaTeX Converter by Abner
- * Professional Theme - Dark & Light Modes, Responsive Layout
- */
-
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
 
-  /* Dark Theme Palette (Default) */
   --bg-primary: #0b0f17;
   --bg-secondary: #111827;
   --bg-tertiary: #1a2234;
@@ -77,7 +71,6 @@
   --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.12);
 }
 
-/* Base Styles */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -106,7 +99,6 @@ body {
   background-attachment: fixed;
 }
 
-/* App Header */
 .app-header {
   position: sticky;
   top: 0;
@@ -193,7 +185,6 @@ body {
   gap: 0.75rem;
 }
 
-/* Header Buttons */
 .icon-btn {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
@@ -236,7 +227,6 @@ body {
   box-shadow: 0 0 8px var(--accent-success);
 }
 
-/* Main Container */
 .main-wrapper {
   max-width: 1400px;
   width: 100%;
@@ -248,7 +238,6 @@ body {
   gap: 1.25rem;
 }
 
-/* Stats Bar */
 .stats-bar {
   display: flex;
   align-items: center;
@@ -268,7 +257,6 @@ body {
   font-weight: 600;
 }
 
-/* Mode Switcher & Settings Bar */
 .control-strip {
   display: flex;
   align-items: center;
@@ -393,7 +381,6 @@ body {
   border-color: var(--border-color-focus);
 }
 
-/* Advanced Options Panel */
 .options-panel {
   display: none;
   background: var(--bg-secondary);
@@ -448,7 +435,6 @@ body {
   border-color: var(--border-color-focus);
 }
 
-/* Two-Column Editor Layout */
 .converter-workspace {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -456,7 +442,6 @@ body {
   min-height: 520px;
 }
 
-/* Editor Cards */
 .editor-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -585,7 +570,6 @@ body {
   line-height: 1.6;
 }
 
-/* Symbol Shortcut Toolbar */
 .symbol-toolbar {
   display: flex;
   align-items: center;
@@ -625,7 +609,6 @@ body {
   border-color: var(--accent-primary);
 }
 
-/* Card Body / Textarea */
 .card-body {
   flex: 1;
   display: flex;
@@ -656,7 +639,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Output Tab Switcher */
 .output-tabs {
   display: flex;
   align-items: center;
@@ -688,7 +670,6 @@ body {
   border: 1px solid var(--border-color);
 }
 
-/* Output Views */
 .output-view-container {
   flex: 1;
   display: flex;
@@ -715,7 +696,6 @@ body {
   word-break: break-word;
 }
 
-/* Rendered Visual View (Matches Image 2) */
 .output-rendered-view {
   display: none;
   padding: 1.25rem;
@@ -746,7 +726,6 @@ body {
   color: var(--text-primary);
 }
 
-/* Rendered Table styling - matching Image 2 */
 .rendered-table-wrapper {
   overflow-x: auto;
   margin: 1.25rem 0;
@@ -812,7 +791,6 @@ body {
   background-color: #f1f5f9;
 }
 
-/* Card Footer / Status */
 .card-footer {
   padding: 0.5rem 1rem;
   background: var(--bg-secondary);
@@ -830,7 +808,6 @@ body {
   gap: 0.75rem;
 }
 
-/* Documentation / How it works section */
 .guide-section {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -890,7 +867,6 @@ body {
   overflow-x: auto;
 }
 
-/* App Footer */
 .app-footer {
   border-top: 1px solid var(--border-color);
   background: var(--bg-secondary);
@@ -925,7 +901,6 @@ body {
   color: var(--text-highlight);
 }
 
-/* Toast Notification */
 .toast {
   position: fixed;
   bottom: 2rem;
@@ -962,12 +937,10 @@ body {
   color: var(--accent-success);
 }
 
-/* Mobile Sticky Bottom Bar */
 .mobile-action-bar {
   display: none;
 }
 
-/* Responsive Breakpoints */
 @media (max-width: 960px) {
   .converter-workspace {
     grid-template-columns: 1fr;
