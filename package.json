@@ -1,0 +1,20 @@
+{
+  "name": "latex-converter-by-abner",
+  "version": "1.0.0",
+  "description": "Professional LaTeX & Markdown table converter to clean plain text, Unicode, and native Microsoft Word tables.",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node test_comprehensive.js"
+  },
+  "keywords": [
+    "latex",
+    "math-converter",
+    "word-tables",
+    "unicode",
+    "ascii",
+    "markdown-table"
+  ],
+  "author": "Abner",
+  "license": "MIT"
+}

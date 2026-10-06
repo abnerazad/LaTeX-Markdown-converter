@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="LaTeX Converter by Abner - Professional, lightning-fast tool to convert LaTeX equations, formulas, symbols, and markdown tables into clean normal text format for desktop and mobile.">
+  <meta name="keywords" content="LaTeX to text converter, LaTeX converter by Abner, math to plain text, markdown table to tsv, unicode formulas">
+  <meta name="author" content="Abner">
+  <title>LaTeX Converter by Abner | Professional LaTeX to Normal Text</title>
+
+  <!-- Favicon & Mobile Meta -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="theme-color" content="#4f46e5">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:title" content="LaTeX Converter by Abner | Professional LaTeX to Normal Text">
+  <meta property="og:description" content="Lightning-fast tool to convert LaTeX equations, math notation, and markdown tables into clean text and Microsoft Word tables.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-icon-box" aria-hidden="true">
+          <!-- Math / LaTeX conversion icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 7 4 4 20 4 20 7"></polyline>
+            <line x1="9" y1="20" x2="15" y2="20"></line>
+            <line x1="12" y1="4" x2="12" y2="20"></line>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <div class="brand-title">
+            <span>LaTeX Converter</span>
+            <span class="brand-author-tag">by Abner</span>
+          </div>
+          <span class="brand-subtitle">Transform LaTeX equations & tables into clean, readable text</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span class="badge-status" id="badge-engine-status">Engine Ready</span>
+        
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" class="icon-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- Controls Strip: Mode Switcher, Stats & Quick Toggles -->
+    <section class="control-strip" aria-label="Converter Controls">
+      <div class="mode-selector-wrapper">
+        <span class="mode-selector-label">Conversion Mode:</span>
+        <div class="segmented-control" role="tablist">
+          <button id="mode-ascii" class="segmented-btn active" role="tab" aria-selected="true" title="Standard ASCII format (p^+, 10^(-19), *)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            ASCII Plain
+          </button>
+          <button id="mode-unicode" class="segmented-btn" role="tab" aria-selected="false" title="Rich Unicode symbols format (p⁺, 10⁻¹⁹, ×)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M10 11l4 8M14 11l-4 8"></path></svg>
+            Unicode Pritty
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-item" title="Mathematical formulas detected">
+          <span>Formulas:</span>
+          <span class="stat-value" id="stat-formulas">0</span>
+        </div>
+        <div class="stat-item" title="Data tables parsed">
+          <span>Tables:</span>
+          <span class="stat-value" id="stat-tables">0</span>
+        </div>
+        <div class="stat-item" title="Words parsed">
+          <span>Words:</span>
+          <span class="stat-value" id="stat-words">0</span>
+        </div>
+        <div class="stat-item" title="Processing speed">
+          <span>Speed:</span>
+          <span class="stat-value" id="stat-proc-time">0ms</span>
+        </div>
+      </div>
+
+      <div class="quick-toggles">
+        <label class="toggle-label" title="Automatically convert as you type or paste">
+          <input type="checkbox" id="toggle-auto-convert" class="toggle-checkbox" checked>
+          <span>Auto-convert</span>
+        </label>
+
+        <button id="btn-toggle-options" class="options-drawer-toggle" aria-expanded="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Options
+        </button>
+
+        <button id="btn-convert" class="action-btn primary" title="Run conversion immediately">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Convert Now
+        </button>
+      </div>
+    </section>
+
+    <!-- Collapsible Advanced Options Panel -->
+    <section id="options-panel" class="options-panel" aria-label="Advanced Configuration">
+      <div class="options-grid">
+        <div class="option-field">
+          <label for="opt-super-style" class="option-field-label">Superscripts & Subscripts</label>
+          <select id="opt-super-style" class="option-select">
+            <option value="ascii">ASCII Caret (p^+, 10^(-19))</option>
+            <option value="unicode">Unicode Characters (p⁺, 10⁻¹⁹)</option>
+          </select>
+        </div>
+
+        <div class="option-field">
+          <label for="opt-mult-symbol" class="option-field-label">Multiplication Symbol</label>
+          <select id="opt-mult-symbol" class="option-select">
+            <option value="*">Compact Asterisk (*)</option>
+            <option value=" * ">Spaced Asterisk ( * )</option>
+            <option value=" × ">Cross Symbol ( × )</option>
+            <option value=" · ">Middle Dot ( · )</option>
+          </select>
+        </div>
+
+        <div class="option-field">
+          <label for="opt-table-format" class="option-field-label">Table Output Style</label>
+          <select id="opt-table-format" class="option-select">
+            <option value="tsv">Tab-Separated (TSV for Excel / Sheets)</option>
+            <option value="spaced">Column-Aligned Plain Text</option>
+            <option value="csv">Comma-Separated (CSV)</option>
+            <option value="markdown">Clean Markdown Table</option>
+          </select>
+        </div>
+
+        <div class="option-field">
+          <label for="opt-bullet-style" class="option-field-label">Bullet Point Style</label>
+          <select id="opt-bullet-style" class="option-select">
+            <option value="tab">Tab Indented (\t) (Matches Prompt)</option>
+            <option value="bullet">Standard Bullet (• )</option>
+            <option value="dash">Dash (- )</option>
+            <option value="keep">Keep Original Markdown Bullet</option>
+          </select>
+        </div>
+
+        <div class="option-field" style="justify-content: flex-end;">
+          <label class="toggle-label" style="margin-top: 1.25rem;">
+            <input type="checkbox" id="opt-strip-markdown" class="toggle-checkbox" checked>
+            <span>Strip Markdown Bold/Italics (**text**)</span>
+          </label>
+        </div>
+
+        <div class="option-field" style="justify-content: flex-end;">
+          <label class="toggle-label" style="margin-top: 1.25rem;">
+            <input type="checkbox" id="opt-clean-units" class="toggle-checkbox" checked>
+            <span>Clean Unit Spacing ($0\text{ C}$ → 0C)</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dual Workspace (Input & Output) -->
+    <div class="converter-workspace">
+
+      <!-- INPUT CARD -->
+      <section class="editor-card" aria-label="LaTeX and Markdown Input Area">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">LaTeX & Markdown Input</h2>
+            <span class="card-tag input-tag">Raw Source</span>
+          </div>
+          <div class="card-actions">
+            <button id="btn-upload" class="action-btn" title="Upload a .txt, .tex, or .md file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              Upload
+            </button>
+            <input type="file" id="file-upload" accept=".txt,.tex,.md,.latex" style="display:none;">
+            <button id="btn-clear" class="action-btn" title="Clear input text">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Symbol Insertion Toolbar -->
+        <div class="symbol-toolbar" id="symbol-toolbar" aria-label="Math symbol insertion bar">
+          <span style="font-size:0.72rem; color:var(--text-muted); margin-right:0.3rem;">Insert:</span>
+          <button type="button" class="symbol-chip" data-insert="10^{-19}">10^{-19}</button>
+          <button type="button" class="symbol-chip" data-insert="p^+">p^+</button>
+          <button type="button" class="symbol-chip" data-insert="n^0">n^0</button>
+          <button type="button" class="symbol-chip" data-insert="e^-">e^-</button>
+          <button type="button" class="symbol-chip" data-insert="\times">\times</button>
+          <button type="button" class="symbol-chip" data-insert="\text{ C}">\text{C}</button>
+          <button type="button" class="symbol-chip" data-insert="\frac{a}{b}">\frac{a}{b}</button>
+          <button type="button" class="symbol-chip" data-insert="\sqrt{x}">\sqrt{x}</button>
+          <button type="button" class="symbol-chip" data-insert="\pm">±</button>
+          <button type="button" class="symbol-chip" data-insert="\alpha">α</button>
+          <button type="button" class="symbol-chip" data-insert="\beta">β</button>
+          <button type="button" class="symbol-chip" data-insert="\theta">θ</button>
+          <button type="button" class="symbol-chip" data-insert="\pi">π</button>
+          <button type="button" class="symbol-chip" data-insert="\infty">∞</button>
+          <button type="button" class="symbol-chip" data-insert="\int">∫</button>
+          <button type="button" class="symbol-chip" data-insert="\sum">∑</button>
+        </div>
+
+        <div class="card-body">
+          <textarea 
+            id="latex-input" 
+            class="editor-textarea" 
+            placeholder="Enter your text . . ."
+            spellcheck="false"
+            aria-label="LaTeX Input Field"></textarea>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-stats">
+            <span id="input-char-count">0 chars</span>
+          </div>
+          <div>Paste or type LaTeX math & markdown</div>
+        </div>
+      </section>
+
+      <!-- OUTPUT CARD -->
+      <section class="editor-card" aria-label="Converted Normal Text Output Area">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">Normal Text Output</h2>
+            <span class="card-tag output-tag">Ready to Paste</span>
+          </div>
+          <div class="card-actions">
+            <button id="btn-copy-table" class="action-btn" title="Copy tab-separated table for Excel, Google Sheets, or Word">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>
+              Copy Table (TSV)
+            </button>
+            <button id="btn-copy" class="action-btn success" title="Copy converted output to clipboard">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Output
+            </button>
+            <button id="btn-download-txt" class="action-btn" title="Download output as .txt file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              .txt
+            </button>
+            <button id="btn-download-tsv" class="action-btn" title="Download output as .tsv table file">
+              .tsv
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Tabs: Plain Text View vs Rendered Visual View -->
+        <div class="output-tabs">
+          <button id="tab-plain" class="output-tab-btn active" title="View clean plain text (perfect for copying)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+            Plain Text View
+          </button>
+          <button id="tab-rendered" class="output-tab-btn" title="View visual table and rendered typography">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            Rendered Visual View
+          </button>
+        </div>
+
+        <div class="output-view-container">
+          <textarea 
+            id="text-output" 
+            class="output-plain-view" 
+            placeholder="Converted text will appear here automatically..." 
+            readonly 
+            aria-label="Converted Text Output"></textarea>
+          
+          <div id="rendered-view" class="output-rendered-view" aria-label="Rendered Visual Output"></div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-stats">
+            <span id="output-char-count">0 chars</span>
+          </div>
+          <div>Tab-separated table pastes directly into Excel & Word</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- How It Works / Feature Highlights -->
+    <section class="guide-section" aria-label="Guide and Feature Overview">
+      <h3 class="guide-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        Conversion Rules & Capability Highlights
+      </h3>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <span>🔬 Scientific & Atomic Formulas</span>
+          </div>
+          <div class="guide-card-content">
+            Converts particle notation, charges, and scientific exponents cleanly:
+            <code class="guide-code">$p^+$, $n^0$, $e^-$ ➔ p^+, n^0, e^- (or p⁺, n⁰, e⁻)</code>
+            <code class="guide-code">+1.6022 \times 10^{-19}\text{ C} ➔ +1.6022*10^(-19) C</code>
+            <code class="guide-code">$0\text{ C}$ ➔ 0C</code>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <span>📊 Markdown & LaTeX Tables</span>
+          </div>
+          <div class="guide-card-content">
+            Strips separator rows (<code>|---|---|</code>) and formats cells into tab-separated values (TSV) or visual styled tables.
+            <code class="guide-code">Subatomic Particle\tSymbol\tAbsolute Charge (C)</code>
+            <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:0.35rem;">* Pastes seamlessly into Google Sheets, Excel, Notion, and Docs.</span>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <span>📐 Greek Letters & Math Symbols</span>
+          </div>
+          <div class="guide-card-content">
+            Translates Greek alphabet and LaTeX operators automatically:
+            <code class="guide-code">\alpha, \beta, \theta, \pi, \mu ➔ α, β, θ, π, μ</code>
+            <code class="guide-code">\le, \ge, \ne, \approx ➔ ≤, ≥, ≠, ≈</code>
+            <code class="guide-code">\frac{a}{b}, \sqrt{x} ➔ a/b, sqrt(x) (or √(x))</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Sticky Bottom Action Bar -->
+  <aside class="mobile-action-bar" aria-label="Mobile Action Controls">
+    <button id="mobile-btn-convert" class="mobile-btn primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      Convert
+    </button>
+    <button id="mobile-btn-copy" class="mobile-btn secondary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      Copy Output
+    </button>
+  </aside>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div>
+        <strong>LaTeX Converter by Abner</strong> &copy; 2026 &bull; High precision LaTeX & Markdown text converter.
+      </div>
+      <div class="footer-links">
+        <span class="footer-link">Offline Ready</span>
+        <span class="footer-link">&bull;</span>
+        <span class="footer-link">Desktop &amp; Mobile Optimized</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Element -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="converter.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

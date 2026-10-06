@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: latex-converter-by-abner
+    env: static
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: true
