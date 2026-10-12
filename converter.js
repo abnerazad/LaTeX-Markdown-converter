@@ -389,6 +389,16 @@
   function convertInlineMath(text, options = {}) {
     if (!text) return '';
 
+    text = text.replace(/\\+(?:text|mathrm|mathbf|mathit|mathsf|mathtt|operatorname|mbox|mathcal|mathbb|mathscr|bm|textbf)\s*\{([^{}]*)\}/g, '$1');
+    text = text.replace(/\\+(?:mathcal|mathbb|mathscr|mathbf|mathrm)\s*([a-zA-Z])/g, '$1');
+
+    text = text.replace(/\\?lfloor(?![a-zA-Z])/g, '⌊');
+    text = text.replace(/\\?rfloor(?![a-zA-Z])/g, '⌋');
+    text = text.replace(/\\?lceil(?![a-zA-Z])/g, '⌈');
+    text = text.replace(/\\?rceil(?![a-zA-Z])/g, '⌉');
+
+    text = text.replace(/\\+\[([\s\S]*?)\]\\+/g, '[$1]');
+
     text = text.replace(/\\+\[([\s\S]*?)\\+\]/g, function (_, math) {
       return convertMathExpression(math, options);
     });
@@ -403,6 +413,12 @@
 
     text = text.replace(/(?<!\\)\$([^\$\n]+?)(?<!\\)\$/g, function (_, math) {
       return convertMathExpression(math, options);
+    });
+
+    text = text.replace(/\\+([^\\\n]+?)\\+/g, function (_, math) {
+      let trimmedMath = math.trim();
+      if (!trimmedMath) return '';
+      return convertMathExpression(trimmedMath, options);
     });
 
     return text;
@@ -518,7 +534,7 @@
 
         let processedLine = line;
 
-        const bulletMatch = processedLine.match(/^(\s*)([\*\-\+])\s+(.*)$/);
+        const bulletMatch = processedLine.match(/^(\s*)([\*\-\+•])\s+(.*)$/);
         if (bulletMatch) {
           const indent = bulletMatch[1];
           let content = bulletMatch[3];
@@ -609,7 +625,7 @@
       for (let l of linesArray) {
         l = l.trim();
         if (!l || /^\|?(\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?$/.test(l)) continue;
-        let cells = l.split('|');
+        let cells = l.includes('\t') && !l.includes('|') ? l.split('\t') : l.split('|');
         if (cells.length > 0 && cells[0].trim() === '') cells.shift();
         if (cells.length > 0 && cells[cells.length - 1].trim() === '') cells.pop();
 
@@ -717,7 +733,8 @@
       }
 
       const isTableLine = (trimmed.startsWith('|') && trimmed.endsWith('|')) ||
-                          (trimmed.startsWith('|') && trimmed.includes('|') && trimmed.split('|').length >= 3);
+                          (trimmed.startsWith('|') && trimmed.includes('|') && trimmed.split('|').length >= 3) ||
+                          (!trimmed.startsWith('•') && trimmed.includes('\t') && trimmed.split('\t').length >= 3);
 
       if (isTableLine) {
         if (insideList) {
@@ -733,7 +750,7 @@
           insideTable = false;
         }
 
-        const bulletMatch = line.match(/^(\s*)([\*\-\+])\s+(.*)$/);
+        const bulletMatch = line.match(/^(\s*)([\*\-\+•])\s+(.*)$/);
         if (bulletMatch) {
           if (!insideList) {
             html += options.isWebPreview ? '<ul class="rendered-bullet-list">' : `<ul style="${UL_STYLE}">`;
@@ -786,7 +803,8 @@
   function analyzeText(input) {
     if (!input) return { formulas: 0, tables: 0, words: 0, characters: 0, lines: 0 };
     const inlineMath = (input.match(/(?<!\\)\$[^\$\n]+?(?<!\\)\$/g) || []).length +
-                       (input.match(/\\+\([^\n]+?\\+\)/g) || []).length;
+                       (input.match(/\\+\([^\n]+?\\+\)/g) || []).length +
+                       (input.match(/\\+[^\\\n]+?\\+/g) || []).length;
     const blockMath = (input.match(/\$\$[\s\S]*?\$\$/g) || []).length +
                       (input.match(/\\+\[[\s\S]*?\\+\]/g) || []).length;
     const tableSeparators = (input.match(/\|?\s*:?-+:?\s*\|/g) || []).length;
