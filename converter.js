@@ -179,16 +179,16 @@
   };
 
   const DEFAULT_OPTIONS = {
-    mode: 'ascii',
-    superscriptStyle: 'ascii',
-    multiplicationSymbol: '*',
-    compactMultiply: true,
+    mode: 'unicode',
+    superscriptStyle: 'unicode',
+    multiplicationSymbol: ' · ',
+    compactMultiply: false,
     tableFormat: 'tsv',
-    bulletStyle: 'tab',
+    bulletStyle: 'bullet-tab',
     stripMarkdown: true,
     cleanUnits: true,
     fractionFormat: 'inline',
-    rootFormat: 'func',
+    rootFormat: 'symbol',
     removeDollarSigns: true,
     trimExtraBlankLines: true
   };
@@ -446,7 +446,7 @@
 
     if (options.mode === 'unicode') {
       if (!customOptions.superscriptStyle) options.superscriptStyle = 'unicode';
-      if (!customOptions.multiplicationSymbol) options.multiplicationSymbol = '×';
+      if (!customOptions.multiplicationSymbol) options.multiplicationSymbol = ' · ';
       if (!customOptions.rootFormat) options.rootFormat = 'symbol';
       if (customOptions.compactMultiply === undefined) options.compactMultiply = false;
     } else if (options.mode === 'ascii') {
@@ -456,7 +456,11 @@
       if (customOptions.compactMultiply === undefined) options.compactMultiply = true;
     }
 
-    let text = convertBlockMath(input, options);
+    let text = input;
+    if (options.stripMarkdown !== false) {
+      text = text.replace(/\n\s*\n\s*(#{1,6}\s+)/g, '\n$1');
+    }
+    text = convertBlockMath(text, options);
 
     const lines = text.split(/\r?\n/);
     const outputLines = [];
@@ -525,12 +529,15 @@
             content = stripMarkdownStyling(content);
           }
 
-          if (options.bulletStyle === 'tab') {
+          const bStyle = options.bulletStyle || 'bullet-tab';
+          if (bStyle === 'bullet-tab') {
+            processedLine = '•\t' + content;
+          } else if (bStyle === 'tab') {
             processedLine = '\t' + content;
-          } else if (options.bulletStyle === 'bullet') {
-            processedLine = indent + '• ' + content;
-          } else if (options.bulletStyle === 'dash') {
-            processedLine = indent + '- ' + content;
+          } else if (bStyle === 'bullet') {
+            processedLine = (indent ? indent : '') + '• ' + content;
+          } else if (bStyle === 'dash') {
+            processedLine = (indent ? indent : '') + '- ' + content;
           } else {
             processedLine = indent + bulletMatch[2] + ' ' + content;
           }
@@ -540,6 +547,7 @@
           if (options.stripMarkdown) {
             processedLine = processedLine.replace(/^#{1,6}\s+/, '');
             processedLine = stripMarkdownStyling(processedLine);
+            processedLine = processedLine.trim();
           }
         }
 
@@ -563,7 +571,7 @@
       result = result.replace(/\n{3,}/g, '\n\n');
     }
 
-    return result;
+    return result.trim();
   }
 
   function convertToWordHtml(input, customOptions = {}) {
@@ -705,7 +713,6 @@
           tableBuffer = [];
           insideTable = false;
         }
-        html += options.isWebPreview ? '<hr class="rendered-divider">' : '<hr style="border: none; border-top: 1px solid #cbd5e1; margin: 12pt 0;">';
         continue;
       }
 

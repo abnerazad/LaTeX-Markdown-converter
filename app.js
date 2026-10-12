@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     OPTIONS: 'abner_latex_options'
   };
 
-  let currentMode = 'ascii';
+  let currentMode = 'unicode';
   let activeOutputTab = 'plain'; 
   let debounceTimer = null;
 
@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const options = {
         autoConvert: autoConvertToggle ? autoConvertToggle.checked : true,
         superStyle: optSuperStyle ? optSuperStyle.value : (currentMode === 'unicode' ? 'unicode' : 'ascii'),
-        multSym: optMultSym ? optMultSym.value : (currentMode === 'unicode' ? ' * ' : '*'),
+        multSym: optMultSym ? optMultSym.value : (currentMode === 'unicode' ? ' · ' : '*'),
         tableFormat: optTableFormat ? optTableFormat.value : 'tsv',
-        bulletStyle: optBulletStyle ? optBulletStyle.value : 'tab',
+        bulletStyle: optBulletStyle ? optBulletStyle.value : 'bullet-tab',
         stripMarkdown: optStripMarkdown ? optStripMarkdown.checked : true,
         cleanUnits: optCleanUnits ? optCleanUnits.checked : true
       };
@@ -135,10 +135,10 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     return {
       mode: currentMode,
       superscriptStyle: optSuperStyle ? optSuperStyle.value : (currentMode === 'unicode' ? 'unicode' : 'ascii'),
-      multiplicationSymbol: optMultSym ? optMultSym.value : (currentMode === 'unicode' ? '×' : '*'),
+      multiplicationSymbol: optMultSym ? optMultSym.value : (currentMode === 'unicode' ? ' · ' : '*'),
       compactMultiply: currentMode === 'ascii',
       tableFormat: optTableFormat ? optTableFormat.value : 'tsv',
-      bulletStyle: optBulletStyle ? optBulletStyle.value : 'tab',
+      bulletStyle: optBulletStyle ? optBulletStyle.value : 'bullet-tab',
       stripMarkdown: optStripMarkdown ? optStripMarkdown.checked : true,
       cleanUnits: optCleanUnits ? optCleanUnits.checked : true,
       trimExtraBlankLines: true
@@ -185,7 +185,7 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     const visualOptions = {
       mode: currentMode,
       superscriptStyle: currentMode === 'ascii' ? 'ascii' : 'unicode',
-      multiplicationSymbol: currentMode === 'ascii' ? '*' : ' * ',
+      multiplicationSymbol: currentMode === 'ascii' ? '*' : ' · ',
       cleanUnits: true,
       stripMarkdown: true,
       isWebPreview: true
@@ -551,15 +551,7 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     try {
       
       const savedMode = localStorage.getItem(STORAGE_KEYS.MODE);
-      if (savedMode === 'unicode') {
-        currentMode = 'unicode';
-        modeUnicodeBtn?.classList.add('active');
-        modeAsciiBtn?.classList.remove('active');
-        modeUnicodeBtn?.setAttribute('aria-selected', 'true');
-        modeAsciiBtn?.setAttribute('aria-selected', 'false');
-        if (optSuperStyle) optSuperStyle.value = 'unicode';
-        if (optMultSym) optMultSym.value = ' × ';
-      } else {
+      if (savedMode === 'ascii') {
         currentMode = 'ascii';
         modeAsciiBtn?.classList.add('active');
         modeUnicodeBtn?.classList.remove('active');
@@ -567,6 +559,14 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
         modeUnicodeBtn?.setAttribute('aria-selected', 'false');
         if (optSuperStyle) optSuperStyle.value = 'ascii';
         if (optMultSym) optMultSym.value = '*';
+      } else {
+        currentMode = 'unicode';
+        modeUnicodeBtn?.classList.add('active');
+        modeAsciiBtn?.classList.remove('active');
+        modeUnicodeBtn?.setAttribute('aria-selected', 'true');
+        modeAsciiBtn?.setAttribute('aria-selected', 'false');
+        if (optSuperStyle) optSuperStyle.value = 'unicode';
+        if (optMultSym) optMultSym.value = ' · ';
       }
 
       const savedOptionsStr = localStorage.getItem(STORAGE_KEYS.OPTIONS);
@@ -579,7 +579,7 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
           if (optSuperStyle && opts.superStyle) optSuperStyle.value = opts.superStyle;
           if (optMultSym && opts.multSym) optMultSym.value = opts.multSym;
           if (optTableFormat && opts.tableFormat) optTableFormat.value = opts.tableFormat;
-          if (optBulletStyle && opts.bulletStyle) optBulletStyle.value = opts.bulletStyle;
+          if (optBulletStyle) optBulletStyle.value = opts.bulletStyle || 'bullet-tab';
           if (optStripMarkdown && typeof opts.stripMarkdown === 'boolean') {
             optStripMarkdown.checked = opts.stripMarkdown;
           }
@@ -589,6 +589,8 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
         } catch (e) {
           console.warn('Could not parse saved options:', e);
         }
+      } else {
+        if (optBulletStyle) optBulletStyle.value = 'bullet-tab';
       }
 
       const savedTab = localStorage.getItem(STORAGE_KEYS.TAB);

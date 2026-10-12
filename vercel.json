@@ -20,11 +20,11 @@
       ]
     },
     {
-      "source": "/(styles\\.css|app\\.js|converter\\.js|favicon\\.svg)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=86400, stale-while-revalidate=43200"
+          "value": "no-cache, no-store, must-revalidate"
         }
       ]
     }
