@@ -44,9 +44,9 @@
     'Phi': 'Φ', 'Psi': 'Ψ', 'Omega': 'Ω'
   };
 
-  const SYMBOLS_MAP = {
-    'times': '*',
-    'cdot': '*',
+  const SYMBOLS_MAP_UNICODE = {
+    'times': '×',
+    'cdot': '·',
     'bullet': '•',
     'pm': '±',
     'mp': '∓',
@@ -104,22 +104,93 @@
     'quad': '  ',
     'qquad': '    ',
     'enspace': ' ',
-    'space': ' '
+    'space': ' ',
+    'lfloor': '⌊',
+    'rfloor': '⌋',
+    'lceil': '⌈',
+    'rceil': '⌉'
+  };
+
+  const SYMBOLS_MAP_ASCII = {
+    'times': '*',
+    'cdot': '*',
+    'bullet': '*',
+    'pm': '+/-',
+    'mp': '-/+',
+    'div': '/',
+    'approx': '~=',
+    'sim': '~',
+    'simeq': '~=',
+    'cong': '==',
+    'equiv': '===',
+    'ne': '!=',
+    'neq': '!=',
+    'le': '<=',
+    'leq': '<=',
+    'ge': '>=',
+    'geq': '>=',
+    'll': '<<',
+    'gg': '>>',
+    'infty': 'inf',
+    'to': '->',
+    'rightarrow': '->',
+    'leftarrow': '<-',
+    'leftrightarrow': '<->',
+    'Rightarrow': '=>',
+    'Leftarrow': '<=',
+    'Leftrightarrow': '<=>',
+    'implies': '=>',
+    'iff': '<=>',
+    'forall': 'FORALL',
+    'exists': 'EXISTS',
+    'nexists': 'NOT EXISTS',
+    'in': 'IN',
+    'notin': 'NOT IN',
+    'subset': 'SUBSET',
+    'supset': 'SUPERSET',
+    'subseteq': '<=',
+    'supseteq': '>=',
+    'cap': 'INTERSECT',
+    'cup': 'UNION',
+    'land': 'AND',
+    'lor': 'OR',
+    'neg': 'NOT',
+    'partial': 'd',
+    'nabla': 'DEL',
+    'hbar': 'h_bar',
+    'ell': 'l',
+    'Re': 'Re',
+    'Im': 'Im',
+    'circ': ' deg',
+    'degree': ' deg',
+    'dots': '...',
+    'cdots': '...',
+    'ldots': '...',
+    'vdots': '...',
+    'ddots': '...',
+    'quad': '  ',
+    'qquad': '    ',
+    'enspace': ' ',
+    'space': ' ',
+    'lfloor': '[|',
+    'rfloor': '|]',
+    'lceil': '|~',
+    'rceil': '~|'
   };
 
   const DEFAULT_OPTIONS = {
-    mode: 'ascii',              
-    superscriptStyle: 'ascii',  
-    multiplicationSymbol: '*', 
-    compactMultiply: true,      
-    tableFormat: 'tsv',         
-    bulletStyle: 'tab',         
-    stripMarkdown: true,        
-    cleanUnits: true,           
-    fractionFormat: 'inline',   
-    rootFormat: 'func',         
-    removeDollarSigns: true,    
-    trimExtraBlankLines: true   
+    mode: 'ascii',
+    superscriptStyle: 'ascii',
+    multiplicationSymbol: '*',
+    compactMultiply: true,
+    tableFormat: 'tsv',
+    bulletStyle: 'tab',
+    stripMarkdown: true,
+    cleanUnits: true,
+    fractionFormat: 'inline',
+    rootFormat: 'func',
+    removeDollarSigns: true,
+    trimExtraBlankLines: true
   };
 
   function toSuperscriptUnicode(str) {
@@ -136,8 +207,11 @@
     if (!s) return '';
 
     s = s.replace(/^\$+|\$+$/g, '').trim();
+    s = s.replace(/^\\+\(|\s*\\+\)$/g, '').trim();
+    s = s.replace(/^\\+\[|\s*\\+\]$/g, '').trim();
 
     const isUnicode = options.mode === 'unicode' || options.superscriptStyle === 'unicode';
+    const symMap = isUnicode ? SYMBOLS_MAP_UNICODE : SYMBOLS_MAP_ASCII;
 
     let multSym = options.multiplicationSymbol;
     if (!multSym) {
@@ -145,140 +219,92 @@
     }
 
     if (options.cleanUnits !== false) {
-      
-      s = s.replace(/([0-9])\s*\\text\{\s*([A-Za-z]+)\s*\}/g, '$1$2');
-      
-      s = s.replace(/\}\s*\\text\{\s*([A-Za-z]+)\s*\}/g, '} $1');
-      
-      s = s.replace(/^\\text\{\s*([A-Za-z]+)\s*\}$/g, '$1');
+      s = s.replace(/([0-9])\s*\\+text\{\s*([A-Za-z]+)\s*\}/g, '$1$2');
+      s = s.replace(/\}\s*\\+text\{\s*([A-Za-z]+)\s*\}/g, '} $1');
+      s = s.replace(/^\\+text\{\s*([A-Za-z]+)\s*\}$/g, '$1');
     }
 
-    s = s.replace(/\\(?:text|mathrm|mathbf|mathit|mathsf|mathtt|operatorname|mbox)\s*\{([^{}]*)\}/g, '$1');
-    while (/\\(?:text|mathrm|mathbf)\s*\{([^{}]*)\}/.test(s)) {
-      s = s.replace(/\\(?:text|mathrm|mathbf)\s*\{([^{}]*)\}/g, '$1');
+    s = s.replace(/\\+(?:text|mathrm|mathbf|mathit|mathsf|mathtt|operatorname|mbox)\s*\{([^{}]*)\}/g, '$1');
+    while (/\\+(?:text|mathrm|mathbf)\s*\{([^{}]*)\}/.test(s)) {
+      s = s.replace(/\\+(?:text|mathrm|mathbf)\s*\{([^{}]*)\}/g, '$1');
     }
+
+    s = s.replace(/\\+frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, function (_, num, den) {
+      num = num.trim();
+      den = den.trim();
+      const wrapNum = /[+\-*/\s]/.test(num) && !num.startsWith('(');
+      const wrapDen = /[+\-*/\s]/.test(den) && !den.startsWith('(');
+      const nStr = wrapNum ? `(${num})` : num;
+      const dStr = wrapDen ? `(${den})` : den;
+      return `${nStr}/${dStr}`;
+    });
+
+    s = s.replace(/\\+sqrt(?:\[(.*?)\])?\s*\{([^{}]*)\}/g, function (_, rootIndex, content) {
+      content = content.trim();
+      if (rootIndex) {
+        return `root(${rootIndex}, ${content})`;
+      }
+      if (isUnicode) {
+        return `√(${content})`;
+      }
+      return `sqrt(${content})`;
+    });
+
+    s = s.replace(/\\+left\s*([(\[{|.\\])/g, '$1');
+    s = s.replace(/\\+right\s*([)\]}|.\\])/g, '$1');
+
+    s = s.replace(/\^\{([^{}]*)\}/g, function (_, exp) {
+      if (isUnicode) {
+        return toSuperscriptUnicode(exp);
+      }
+      return `^(${exp})`;
+    });
+
+    s = s.replace(/\^([0-9a-zA-Z\+\-])/g, function (_, exp) {
+      if (isUnicode) {
+        return toSuperscriptUnicode(exp);
+      }
+      return `^${exp}`;
+    });
+
+    s = s.replace(/_\{([^{}]*)\}/g, function (_, sub) {
+      if (isUnicode) {
+        return toSubscriptUnicode(sub);
+      }
+      return `_${sub}`;
+    });
+
+    s = s.replace(/_([0-9a-zA-Z\+\-])/g, function (_, sub) {
+      if (isUnicode) {
+        return toSubscriptUnicode(sub);
+      }
+      return `_${sub}`;
+    });
+
+    s = s.replace(/\\+(log|ln|exp|sin|cos|tan|sec|csc|cot|arcsin|arccos|arctan|sinh|cosh|tanh|lim|min|max|sup|inf|arg|det|dim|gcd|deg)\b/g, '$1 ');
+
+    for (const [cmd, sym] of Object.entries(symMap)) {
+      const regex = new RegExp('\\\\+' + cmd + '(?![a-zA-Z])', 'g');
+      if (cmd === 'times') {
+        s = s.replace(regex, multSym);
+      } else {
+        s = s.replace(regex, sym);
+      }
+    }
+
+    for (const [cmd, sym] of Object.entries(GREEK_MAP)) {
+      const regex = new RegExp('\\\\+' + cmd + '(?![a-zA-Z])', 'g');
+      s = s.replace(regex, sym);
+    }
+
+    s = s.replace(/\\+([a-zA-Z]+)/g, '$1');
+    s = s.replace(/\\+([=+\-*,;:!<>~|\\()\[\]])/g, '$1');
 
     if (options.compactMultiply && options.mode === 'ascii') {
-      
-      s = s.replace(/\s*\\times\s*/g, '*');
-      s = s.replace(/\s*\\cdot\s*/g, '*');
-    } else {
-      const formattedMult = multSym.includes(' ') ? multSym : ` ${multSym} `;
-      s = s.replace(/\s*\\times\s*/g, formattedMult);
-      s = s.replace(/\s*\\cdot\s*/g, isUnicode ? ' · ' : formattedMult);
+      s = s.replace(/([0-9\)])\s*\*\s*([0-9\(])/g, '$1*$2');
     }
-
-    let fracRegex = /\\(?:d|t)?frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/;
-    while (fracRegex.test(s)) {
-      s = s.replace(fracRegex, function (_, num, den) {
-        num = num.trim();
-        den = den.trim();
-        if (options.fractionFormat === 'parens' || /[\+\-\*\/\s]/.test(num) || /[\+\-\*\/\s]/.test(den)) {
-          return `(${num})/(${den})`;
-        }
-        return `${num}/${den}`;
-      });
-    }
-
-    s = s.replace(/\\sqrt\s*\[(.*?)\]\s*\{(.*?)\}/g, function (_, n, x) {
-      if (options.rootFormat === 'symbol' || isUnicode) {
-        return `${toSuperscriptUnicode(n)}√(${x})`;
-      }
-      return `${n}-root(${x})`;
-    });
-
-    s = s.replace(/\\sqrt\s*\{(.*?)\}/g, function (_, x) {
-      if (options.rootFormat === 'symbol' || isUnicode) {
-        return `√(${x})`;
-      }
-      return `sqrt(${x})`;
-    });
-
-    for (const [name, char] of Object.entries(GREEK_MAP)) {
-      const reg = new RegExp(`\\\\${name}\\b`, 'g');
-      s = s.replace(reg, char);
-    }
-
-    for (const [name, char] of Object.entries(SYMBOLS_MAP)) {
-      if (name === 'times' || name === 'cdot') continue;
-      const reg = new RegExp(`\\\\${name}\\b`, 'g');
-      s = s.replace(reg, char);
-    }
-
-    s = s.replace(/\\left\s*\\\{/g, '{');
-    s = s.replace(/\\right\s*\\\}/g, '}');
-    s = s.replace(/\\left\s*\(/g, '(');
-    s = s.replace(/\\right\s*\)/g, ')');
-    s = s.replace(/\\left\s*\[/g, '[');
-    s = s.replace(/\\right\s*\]/g, ']');
-    s = s.replace(/\\left\s*\|/g, '|');
-    s = s.replace(/\\right\s*\|/g, '|');
-    s = s.replace(/\\\{/g, '{');
-    s = s.replace(/\\\}/g, '}');
-
-    s = s.replace(/\\vec\s*\{([^{}]+)\}/g, isUnicode ? '$1\u20D7' : 'vec($1)');
-    s = s.replace(/\\bar\s*\{([^{}]+)\}/g, isUnicode ? '$1\u0304' : 'bar($1)');
-    s = s.replace(/\\hat\s*\{([^{}]+)\}/g, isUnicode ? '$1\u0302' : 'hat($1)');
-    s = s.replace(/\\tilde\s*\{([^{}]+)\}/g, isUnicode ? '$1\u0303' : 'tilde($1)');
-
-    s = s.replace(/\\sum(?:_\{([^{}]+)\}|_(\S+))?(?:\^\{([^{}]+)\}|\^(\S+))?/g, function (_, sub1, sub2, sup1, sup2) {
-      const sub = sub1 || sub2;
-      const sup = sup1 || sup2;
-      if (sub && sup) return `sum(${sub}..${sup})`;
-      if (sub) return `sum(${sub})`;
-      return isUnicode ? 'Σ' : 'sum';
-    });
-    s = s.replace(/\\int(?:_\{([^{}]+)\}|_(\S+))?(?:\^\{([^{}]+)\}|\^(\S+))?/g, function (_, sub1, sub2, sup1, sup2) {
-      const sub = sub1 || sub2;
-      const sup = sup1 || sup2;
-      if (sub && sup) return `int(${sub}..${sup})`;
-      if (sub) return `int(${sub})`;
-      return isUnicode ? '∫' : 'int';
-    });
-
-    s = s.replace(/\\(sin|cos|tan|sec|csc|cot|sinh|cosh|tanh|ln|log|exp|det|dim|ker|deg|gcd|min|max|lim|sup|inf)\b/g, '$1');
-
-    if (isUnicode) {
-      
-      s = s.replace(/\^\{([^{}]+)\}/g, function (_, exp) {
-        return toSuperscriptUnicode(exp);
-      });
-      s = s.replace(/\^([0-9\+\-a-zA-Z])/g, function (_, ch) {
-        return SUPERSCRIPT_MAP[ch] || `^${ch}`;
-      });
-
-      s = s.replace(/_\{([^{}]+)\}/g, function (_, sub) {
-        return toSubscriptUnicode(sub);
-      });
-      s = s.replace(/_([0-9\+\-a-zA-Z])/g, function (_, ch) {
-        return SUBSCRIPT_MAP[ch] || `_${ch}`;
-      });
-    } else {
-      
-      s = s.replace(/\^\{([^{}]+)\}/g, function (_, exp) {
-        if (exp.length > 1 || /^[\+\-]/.test(exp)) {
-          return `^(${exp})`;
-        }
-        return `^${exp}`;
-      });
-
-      s = s.replace(/_\{([^{}]+)\}/g, function (_, sub) {
-        if (sub.length > 1) {
-          return `_(${sub})`;
-        }
-        return `_${sub}`;
-      });
-    }
-
-    s = s.replace(/\\([\{\}\$\%])/g, '$1');
-    s = s.replace(/\\,/g, ' ');
-    s = s.replace(/\\;/g, ' ');
-    s = s.replace(/\\!/g, '');
-    s = s.replace(/\\ /g, ' ');
-    s = s.replace(/\\([a-zA-Z]+)/g, '$1');
 
     s = s.replace(/\$/g, '');
-
     s = s.replace(/\s+/g, ' ').trim();
 
     return s;
@@ -287,18 +313,13 @@
   function stripMarkdownStyling(text) {
     if (!text) return '';
     let res = text;
-    
+    res = res.replace(/\\+`([^`]+)\\+`/g, '$1');
     res = res.replace(/(\*\*\*|___)(.*?)\1/g, '$2');
-    
     res = res.replace(/(\*\*|__)(.*?)\1/g, '$2');
-    
-    res = res.replace(/(^|[^\w])\*([^\*]+)\*(?=[^\w]|$)/g, '$1$2');
-    res = res.replace(/(^|[^\w])_([^_]+)_(?=[^\w]|$)/g, '$1$2');
-    
+    res = res.replace(/(^|[^\w\s])\*([^\s\*](?:[^*]*?[^\s\*])?)\*(?=[^\w\s]|$)/g, '$1$2');
+    res = res.replace(/(^|[^\w\s])_([^\s_](?:[^_]*?[^\s_])?)_(?=[^\w\s]|$)/g, '$1$2');
     res = res.replace(/~~(.*?)~~/g, '$1');
-    
     res = res.replace(/`([^`]+)`/g, '$1');
-    
     res = res.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
     return res;
   }
@@ -368,7 +389,11 @@
   function convertInlineMath(text, options = {}) {
     if (!text) return '';
 
-    text = text.replace(/\\\((.*?)\\\)/g, function (_, math) {
+    text = text.replace(/\\+\[([\s\S]*?)\\+\]/g, function (_, math) {
+      return convertMathExpression(math, options);
+    });
+
+    text = text.replace(/\\+\(([\s\S]*?)\\+\)/g, function (_, math) {
       return convertMathExpression(math, options);
     });
 
@@ -390,11 +415,11 @@
       return convertMathExpression(math, options);
     });
 
-    text = text.replace(/\\\[([\s\S]*?)\\\]/g, function (_, math) {
+    text = text.replace(/\\+\[([\s\S]*?)\\+\]/g, function (_, math) {
       return convertMathExpression(math, options);
     });
 
-    text = text.replace(/\\begin\{(?:equation|align|gather|split|multline)\*?\}([\s\S]*?)\\end\{(?:equation|align|gather|split|multline)\*?\}/g, function (_, math) {
+    text = text.replace(/\\+begin\{(?:equation|align|gather|split|multline)\*?\}([\s\S]*?)\\+end\{(?:equation|align|gather|split|multline)\*?\}/g, function (_, math) {
       return convertMathExpression(math, options);
     });
 
@@ -407,9 +432,8 @@
     if (options.stripMarkdown !== false) {
       res = stripMarkdownStyling(res);
     }
-    
-    res = res.replace(/\\text\s*\{([^{}]*)\}/g, '$1');
-    res = res.replace(/\\mathrm\s*\{([^{}]*)\}/g, '$1');
+    res = res.replace(/\\+text\s*\{([^{}]*)\}/g, '$1');
+    res = res.replace(/\\+mathrm\s*\{([^{}]*)\}/g, '$1');
     return res;
   }
 
@@ -422,7 +446,7 @@
 
     if (options.mode === 'unicode') {
       if (!customOptions.superscriptStyle) options.superscriptStyle = 'unicode';
-      if (!customOptions.multiplicationSymbol) options.multiplicationSymbol = ' * ';
+      if (!customOptions.multiplicationSymbol) options.multiplicationSymbol = '×';
       if (!customOptions.rootFormat) options.rootFormat = 'symbol';
       if (customOptions.compactMultiply === undefined) options.compactMultiply = false;
     } else if (options.mode === 'ascii') {
@@ -438,13 +462,42 @@
     const outputLines = [];
     let tableBuffer = [];
     let insideTable = false;
+    let insideCodeBlock = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const trimmed = line.trim();
 
+      const normalizedFence = trimmed.replace(/\\+`/g, '`');
+      if (/^```|^~~~/.test(normalizedFence)) {
+        if (insideTable) {
+          const convertedTable = convertTable(tableBuffer, options);
+          if (convertedTable) outputLines.push(convertedTable);
+          tableBuffer = [];
+          insideTable = false;
+        }
+        insideCodeBlock = !insideCodeBlock;
+        outputLines.push(line.replace(/\\+`/g, '`'));
+        continue;
+      }
+
+      if (insideCodeBlock) {
+        outputLines.push(line);
+        continue;
+      }
+
+      if (/^(\s*[-*_]\s*){3,}$/.test(trimmed)) {
+        if (insideTable) {
+          const convertedTable = convertTable(tableBuffer, options);
+          if (convertedTable) outputLines.push(convertedTable);
+          tableBuffer = [];
+          insideTable = false;
+        }
+        continue;
+      }
+
       const isTableLine = (trimmed.startsWith('|') && trimmed.endsWith('|')) ||
-                          (trimmed.includes('|') && trimmed.split('|').length >= 3);
+                          (trimmed.startsWith('|') && trimmed.includes('|') && trimmed.split('|').length >= 3);
 
       if (isTableLine) {
         insideTable = true;
@@ -503,8 +556,8 @@
 
     let result = outputLines.join('\n');
 
-    result = result.replace(/\\text\s*\{([^{}]*)\}/g, '$1');
-    result = result.replace(/\\mathrm\s*\{([^{}]*)\}/g, '$1');
+    result = result.replace(/\\+text\s*\{([^{}]*)\}/g, '$1');
+    result = result.replace(/\\+mathrm\s*\{([^{}]*)\}/g, '$1');
 
     if (options.trimExtraBlankLines) {
       result = result.replace(/\n{3,}/g, '\n\n');
@@ -519,7 +572,7 @@
     const options = Object.assign({}, DEFAULT_OPTIONS, {
       mode: 'unicode',
       superscriptStyle: 'unicode',
-      multiplicationSymbol: ' * ',
+      multiplicationSymbol: ' × ',
       cleanUnits: true,
       stripMarkdown: true
     }, customOptions);
@@ -531,6 +584,8 @@
     let insideTable = false;
     let tableBuffer = [];
     let insideList = false;
+    let insideCodeBlock = false;
+    let codeBuffer = [];
 
     const TABLE_STYLE = 'border-collapse: collapse; width: 100%; max-width: 100%; margin: 12pt 0; font-family: Calibri, Aptos, Arial, sans-serif; font-size: 11pt; border: 1.5pt solid #4a5568;';
     const TH_STYLE = 'border: 1pt solid #4a5568; background-color: #f1f5f9; color: #0f172a; font-weight: bold; padding: 7pt 10pt; text-align: left; vertical-align: middle;';
@@ -538,6 +593,7 @@
     const UL_STYLE = 'margin: 6pt 0 12pt 0; padding-left: 20pt; list-style-type: disc; font-family: Calibri, Aptos, Arial, sans-serif; font-size: 11pt; line-height: 1.45;';
     const LI_STYLE = 'margin-bottom: 5pt; color: #1e293b;';
     const P_STYLE = 'margin: 0 0 10pt 0; font-family: Calibri, Aptos, Arial, sans-serif; font-size: 11pt; line-height: 1.45; color: #1e293b;';
+    const PRE_STYLE = 'background-color: #f8fafc; border: 1pt solid #cbd5e1; border-radius: 4pt; padding: 8pt 12pt; margin: 8pt 0 12pt 0; font-family: Consolas, Courier New, monospace; font-size: 10pt; color: #0f172a; white-space: pre; overflow-x: auto;';
 
     function flushTable(linesArray) {
       if (!linesArray || linesArray.length === 0) return '';
@@ -551,12 +607,9 @@
 
         rows.push(cells.map(c => {
           let cellText = c.trim();
-          
           cellText = convertInlineMath(cellText, options);
-          
           cellText = cellText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
           cellText = stripMarkdownStyling(cellText);
-          
           cellText = cellText.replace(/\$/g, '');
           return cellText.trim();
         }));
@@ -588,7 +641,6 @@
       }
 
       let tHtml = `<table border="1" cellpadding="8" cellspacing="0" style="${TABLE_STYLE}">`;
-      
       tHtml += '<thead><tr style="background-color: #f1f5f9;">';
       rows[0].forEach(cell => {
         tHtml += `<th style="${TH_STYLE}">${cell}</th>`;
@@ -615,8 +667,50 @@
       const line = lines[i];
       const trimmed = line.trim();
 
+      const normalizedFence = trimmed.replace(/\\+`/g, '`');
+      if (/^```|^~~~/.test(normalizedFence)) {
+        if (insideList) {
+          html += '</ul>';
+          insideList = false;
+        }
+        if (insideTable) {
+          html += flushTable(tableBuffer);
+          tableBuffer = [];
+          insideTable = false;
+        }
+        if (insideCodeBlock) {
+          const codeContent = codeBuffer.join('\n').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          html += options.isWebPreview ? `<pre class="rendered-code-block"><code>${codeContent}</code></pre>` : `<pre style="${PRE_STYLE}"><code>${codeContent}</code></pre>`;
+          codeBuffer = [];
+          insideCodeBlock = false;
+        } else {
+          insideCodeBlock = true;
+          codeBuffer = [];
+        }
+        continue;
+      }
+
+      if (insideCodeBlock) {
+        codeBuffer.push(line);
+        continue;
+      }
+
+      if (/^(\s*[-*_]\s*){3,}$/.test(trimmed)) {
+        if (insideList) {
+          html += '</ul>';
+          insideList = false;
+        }
+        if (insideTable) {
+          html += flushTable(tableBuffer);
+          tableBuffer = [];
+          insideTable = false;
+        }
+        html += options.isWebPreview ? '<hr class="rendered-divider">' : '<hr style="border: none; border-top: 1px solid #cbd5e1; margin: 12pt 0;">';
+        continue;
+      }
+
       const isTableLine = (trimmed.startsWith('|') && trimmed.endsWith('|')) ||
-                          (trimmed.includes('|') && trimmed.split('|').length >= 3);
+                          (trimmed.startsWith('|') && trimmed.includes('|') && trimmed.split('|').length >= 3);
 
       if (isTableLine) {
         if (insideList) {
@@ -639,15 +733,10 @@
             insideList = true;
           }
           let itemText = bulletMatch[3];
-          
           itemText = convertInlineMath(itemText, options);
-          
           itemText = itemText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          
           itemText = stripMarkdownStyling(itemText);
-          
           itemText = itemText.replace(/\$/g, '');
-
           html += options.isWebPreview ? `<li>${itemText}</li>` : `<li style="${LI_STYLE}">${itemText}</li>`;
         } else {
           if (insideList) {
@@ -679,14 +768,20 @@
       html += flushTable(tableBuffer);
     }
 
+    if (insideCodeBlock && codeBuffer.length > 0) {
+      const codeContent = codeBuffer.join('\n').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      html += options.isWebPreview ? `<pre class="rendered-code-block"><code>${codeContent}</code></pre>` : `<pre style="${PRE_STYLE}"><code>${codeContent}</code></pre>`;
+    }
+
     return html;
   }
 
   function analyzeText(input) {
     if (!input) return { formulas: 0, tables: 0, words: 0, characters: 0, lines: 0 };
-    const inlineMath = (input.match(/(?<!\\)\$[^\$\n]+?(?<!\\)\$/g) || []).length;
+    const inlineMath = (input.match(/(?<!\\)\$[^\$\n]+?(?<!\\)\$/g) || []).length +
+                       (input.match(/\\+\([^\n]+?\\+\)/g) || []).length;
     const blockMath = (input.match(/\$\$[\s\S]*?\$\$/g) || []).length +
-                      (input.match(/\\\[[\s\S]*?\\\]/g) || []).length;
+                      (input.match(/\\+\[[\s\S]*?\\+\]/g) || []).length;
     const tableSeparators = (input.match(/\|?\s*:?-+:?\s*\|/g) || []).length;
     const words = input.trim() ? input.trim().split(/\s+/).length : 0;
     const characters = input.length;
@@ -715,6 +810,7 @@
     SUPERSCRIPT_MAP,
     SUBSCRIPT_MAP,
     GREEK_MAP,
-    SYMBOLS_MAP
+    SYMBOLS_MAP_UNICODE,
+    SYMBOLS_MAP_ASCII
   };
 });

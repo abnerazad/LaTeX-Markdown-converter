@@ -726,6 +726,25 @@ body {
   color: var(--text-primary);
 }
 
+.rendered-code-block {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  margin: 1rem 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.rendered-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 1.5rem 0;
+}
+
 .rendered-table-wrapper {
   overflow-x: auto;
   margin: 1.25rem 0;

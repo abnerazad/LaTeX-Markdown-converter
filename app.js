@@ -135,7 +135,7 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
     return {
       mode: currentMode,
       superscriptStyle: optSuperStyle ? optSuperStyle.value : (currentMode === 'unicode' ? 'unicode' : 'ascii'),
-      multiplicationSymbol: optMultSym ? optMultSym.value : (currentMode === 'unicode' ? ' * ' : '*'),
+      multiplicationSymbol: optMultSym ? optMultSym.value : (currentMode === 'unicode' ? '×' : '*'),
       compactMultiply: currentMode === 'ascii',
       tableFormat: optTableFormat ? optTableFormat.value : 'tsv',
       bulletStyle: optBulletStyle ? optBulletStyle.value : 'tab',
@@ -444,7 +444,7 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
       modeUnicodeBtn.setAttribute('aria-selected', 'true');
       modeUnicodeBtn.setAttribute('aria-selected', 'false');
       if (optSuperStyle) optSuperStyle.value = 'unicode';
-      if (optMultSym) optMultSym.value = ' * ';
+      if (optMultSym) optMultSym.value = ' × ';
       showToast('Mode: Unicode Pritty');
     }
     if (save) {
@@ -558,7 +558,7 @@ The total mass of an atom is concentrated almost entirely within its dense, cent
         modeUnicodeBtn?.setAttribute('aria-selected', 'true');
         modeAsciiBtn?.setAttribute('aria-selected', 'false');
         if (optSuperStyle) optSuperStyle.value = 'unicode';
-        if (optMultSym) optMultSym.value = ' * ';
+        if (optMultSym) optMultSym.value = ' × ';
       } else {
         currentMode = 'ascii';
         modeAsciiBtn?.classList.add('active');
